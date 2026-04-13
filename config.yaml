@@ -1,0 +1,16 @@
+paths:
+  wildtype: "reference/nylB_wildtype.fasta"
+  variants: "reference/nylB_variants.fasta"
+  pre_selection: "data/simulated/pre_selection.fasta"
+  post_selection: "data/simulated/post_selection.fasta"
+
+simulation:
+  n_variants: 10
+  n_mutations: 2
+  seed: 42
+  base_depth: 10
+  winner_depth: 100
+  winners:
+    - 2
+    - 5
+    - 8
