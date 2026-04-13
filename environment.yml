@@ -1,0 +1,11 @@
+name: nylb-pipeline
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - biopython
+  - pyyaml
+  - pip
+  - pip:
+    - git+https://github.com/rrwick/Badread.git
+prefix: /home/isgr/miniconda3/envs/nylb-pipeline
