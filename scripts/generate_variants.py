@@ -62,6 +62,8 @@ def main():
 
     logger.info(f"Reading wildtype sequence from {config.paths.wildtype}")
     record = SeqIO.read(config.paths.wildtype, "fasta")
+    record.id = "nylB_wildtype"
+    record.description = ""
     sequence = str(record.seq)
     logger.info(f"Wildtype sequence length: {len(sequence)}bp")
 

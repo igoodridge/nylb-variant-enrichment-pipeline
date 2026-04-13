@@ -2,57 +2,50 @@ import logging
 import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent))
-
 from Bio import SeqIO
-from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
+sys.path.append(str(Path(__file__).parent))
 from config import load_config
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def write_library(records: list[SeqRecord], depths: dict, output_path: Path) -> None:
-    """Write a FASTA library with Badread-compatible depth annotations.
+def write_individual_fastas(
+    records: list[SeqRecord],
+    output_dir: Path,
+    ) -> None:
+    """Write individual FASTA files for each sequence.
 
     Args:
         records: List of SeqRecord objects to write.
-        depths: Dictionary mapping sequence IDs to depth values.
-        output_path: Path to write the output FASTA file.
+        output_dir: Directory to write individual FASTA files.
     """
-    output_records = []
+    output_dir.mkdir(parents=True, exist_ok=True)
     for rec in records:
-        depth = depths.get(rec.id, 10)
-        new_rec = SeqRecord(rec.seq, id=rec.id, description=f"depth={depth}")
-        output_records.append(new_rec)
-        logger.info(f"Added {rec.id} with depth={depth}")
-
-    SeqIO.write(output_records, output_path, "fasta")
-    logger.info(f"Written {len(output_records)} sequences to {output_path}")
+        out_path = output_dir / f"{rec.id}.fasta"
+        SeqIO.write(rec, out_path, "fasta")
+        logger.info(f"Written {rec.id} to {out_path}")
 
 
-def main():
-    """Generate pre- and post-selection FASTA libraries for Badread simulation."""
+def main() -> None:
+    """Generate individual FASTA files for pre- and post-selection libraries."""
     config = load_config()
 
     wildtype = SeqIO.read(config.paths.wildtype, "fasta")
+    wildtype.id = "nylB_wildtype"
+    wildtype.description = ""
     variants = list(SeqIO.parse(config.paths.variants, "fasta"))
     all_records = [wildtype] + variants
     logger.info(f"Loaded {len(all_records)} sequences")
 
-    # Pre-selection: all sequences at equal depth
-    pre_depths = {rec.id: config.simulation.base_depth for rec in all_records}
-    write_library(all_records, pre_depths, config.paths.pre_selection)
+    pre_dir = Path(config.paths.individual_fastas) / "pre_selection"
+    post_dir = Path(config.paths.individual_fastas) / "post_selection"
 
-    # Post-selection: winner variants at higher depth
-    post_depths = {rec.id: config.simulation.base_depth for rec in all_records}
-    for winner in config.simulation.winners:
-        name = f"nylB_variant_{winner}"
-        post_depths[name] = config.simulation.winner_depth
-        logger.info(f"Set winner {name} to depth={config.simulation.winner_depth}")
-    write_library(all_records, post_depths, config.paths.post_selection)
+    write_individual_fastas(all_records, pre_dir)
+    write_individual_fastas(all_records, post_dir)
+    logger.info("Written individual FASTAs for pre- and post-selection libraries")
 
 
 if __name__ == "__main__":
