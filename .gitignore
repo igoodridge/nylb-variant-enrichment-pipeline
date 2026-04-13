@@ -3,6 +3,20 @@
 /reference
 /data
 
+# Results
+/results
+
 
 # Temp files
 *.pyc
+/tmp
+
+# Log files
+*.log
+
+# BAM files
+*.bai
+*.bam
+
+# Snakemake files
+.snakemake/

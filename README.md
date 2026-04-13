@@ -11,18 +11,32 @@ This pipeline simulates that process using the NylB nylonase gene from *Pseudart
 ## Directory Structure
 
 nylb-variant-enrichment-pipeline/
-├── reference/              # Wildtype and variant FASTA sequences
+```
+nylb-variant-enrichment-pipeline/
+├── reference/                  # Wildtype and variant FASTA sequences
 ├── data/
-│   ├── simulated/          # Badread-simulated Nanopore reads
-│   └── raw/                # Raw sequencing data (if applicable)
-├── scripts/                # Analysis scripts
-│   ├── config.py           # Configuration dataclasses
-│   ├── generate_variants.py
-│   └── prepare_libraries.py
-├── results/                # Pipeline outputs
-├── config.yaml             # Pipeline configuration
-├── environment.yml         # Conda environment
+│   └── simulated/
+│       ├── individual/         # Per-variant FASTA and FASTQ files
+│       │   ├── pre_selection/
+│       │   └── post_selection/
+│       ├── pre_selection.fastq # Merged pre-selection reads
+│       └── post_selection.fastq# Merged post-selection reads
+├── results/
+│   ├── qc/                     # NanoStat quality reports
+│   ├── trimmed/                # Porechop-trimmed reads
+│   ├── aligned/                # Minimap2 BAM files
+│   └── report/                 # Enrichment report
+├── logs/                       # Per-rule logs
+├── scripts/
+│   ├── config.py               # Configuration dataclasses
+│   ├── generate_variants.py    # Synthetic variant generation
+│   ├── prepare_libraries.py    # Per-variant FASTA preparation
+│   └── count_variants.py       # Enrichment analysis
+├── Snakefile                   # Snakemake workflow
+├── config.yaml                 # Pipeline configuration
+├── environment.yml             # Conda environment
 └── README.md
+```
 
 ## Installation
 
@@ -52,24 +66,31 @@ Output: `reference/nylB_variants.fasta`
 
 ### 2. Prepare selection libraries
 
-Creates pre- and post-selection FASTA libraries with Badread-compatible depth annotations. Variants 2, 5, and 8 are designated as enriched winners in the post-selection library:
+Creates individual per-variant FASTA files for pre- and post-selection libraries:
 
 ```bash
 python3 scripts/prepare_libraries.py
 ```
 
-Output: `data/simulated/pre_selection.fasta`, `data/simulated/post_selection.fasta`
+Output: `data/simulated/individual/pre_selection/` and `data/simulated/individual/post_selection/`
 
-### 3. Simulate Nanopore reads
+### 3. Run the Snakemake workflow
 
-Simulate realistic Nanopore reads from each library using Badread:
+Runs all remaining steps automatically — Nanopore read simulation, QC, trimming, alignment, and enrichment analysis:
 
 ```bash
-badread simulate --reference data/simulated/pre_selection.fasta --quantity 50x > data/simulated/pre_selection.fastq
-badread simulate --reference data/simulated/post_selection.fasta --quantity 50x > data/simulated/post_selection.fastq
+snakemake --cores 4 --scheduler greedy
 ```
 
-Output: `data/simulated/pre_selection.fastq`, `data/simulated/post_selection.fastq`
+The workflow will:
+- Simulate Nanopore reads per variant using Badread (winners at 100x, others at 10x)
+- Merge per-variant FASTQs into pre- and post-selection libraries
+- Run QC with NanoStat
+- Trim adapters with Porechop
+- Align reads to reference variants with Minimap2
+- Generate enrichment report
+
+Output: `results/report/enrichment_report.tsv`
 
 ## Configuration
 
@@ -79,26 +100,43 @@ All parameters are defined in `config.yaml`:
 paths:
   wildtype: "reference/nylB_wildtype.fasta"
   variants: "reference/nylB_variants.fasta"
-  pre_selection: "data/simulated/pre_selection.fasta"
-  post_selection: "data/simulated/post_selection.fasta"
+  pre_selection: "data/simulated/pre_selection.fastq"
+  post_selection: "data/simulated/post_selection.fastq"
+  individual_fastas: "data/simulated/individual"
 
 simulation:
   n_variants: 10
-  n_mutations: 2
+  n_mutations: 15
   seed: 42
-  base_depth: 10
-  winner_depth: 100
+  base_quantity: "10x"
+  winner_quantity: "100x"
   winners:
     - 2
     - 5
     - 8
+
+samples:
+  - pre_selection
+  - post_selection
 ```
+
+Note: `n_mutations` is set to 15 to ensure variants are sufficiently distinct for unambiguous read alignment. With fewer mutations, sequences are too similar (~99.8% identical at 2 mutations in a 1179bp gene) and Minimap2 distributes reads ambiguously across variants, flattening the enrichment signal.
+
+## Expected output
+
+The enrichment report (`results/report/enrichment_report.tsv`) should show variants 2, 5, and 8 with enrichment ratios of approximately 10, reflecting their 10x higher sequencing depth in the post-selection library. All other variants should have ratios close to 1.
 
 ## Dependencies
 
 - Python 3.12
 - Biopython
 - PyYAML
-- Badread
+- pysam
+- Snakemake
+- NanoStat
+- Porechop
+- Minimap2
+- Samtools
+- Badread (installed via pip)
 
 See `environment.yml` for full details.
