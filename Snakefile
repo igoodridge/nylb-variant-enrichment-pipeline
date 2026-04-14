@@ -21,7 +21,8 @@ rule all:
         expand("results/qc/{sample}_stats.txt", sample=SAMPLES),
         expand("results/trimmed/{sample}.fastq", sample=SAMPLES),
         expand("results/aligned/{sample}.bam", sample=SAMPLES),
-        "results/report/enrichment_report.tsv"
+        "results/report/enrichment_report.tsv",
+        "results/report/validation_report.txt"
 
 
 rule simulate_reads:
@@ -94,3 +95,14 @@ rule count_variants:
         "logs/count_variants.log"
     shell:
         "python3 scripts/count_variants.py --pre results/aligned/pre_selection.bam --post results/aligned/post_selection.bam --output {output} 2> {log}"
+
+
+rule validate:
+    input:
+        "results/report/enrichment_report.tsv"
+    output:
+        "results/report/validation_report.txt"
+    log:
+        "logs/validate.log"
+    shell:
+        "python3 scripts/validate_enrichment.py --report {input} --output {output} 2> {log}"
