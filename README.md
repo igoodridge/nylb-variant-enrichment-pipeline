@@ -83,7 +83,7 @@ snakemake --cores 4 --scheduler greedy
 ```
 
 The workflow will:
-- Simulate Nanopore reads per variant using Badread (winners at 100x, others at 10x)
+- Simulate Nanopore reads per variant using Badread (winners at 500x, others at 100x)
 - Merge per-variant FASTQs into pre- and post-selection libraries
 - Run QC with NanoStat
 - Trim adapters with Porechop
@@ -106,10 +106,10 @@ paths:
 
 simulation:
   n_variants: 10
-  n_mutations: 15
+  n_mutations: 20
   seed: 42
-  base_quantity: "10x"
-  winner_quantity: "100x"
+  base_quantity: "100x"
+  winner_quantity: "500x"
   winners:
     - 2
     - 5
@@ -124,7 +124,7 @@ Note: `n_mutations` is set to 15 to ensure variants are sufficiently distinct fo
 
 ## Expected output
 
-The enrichment report (`results/report/enrichment_report.tsv`) should show variants 2, 5, and 8 with enrichment ratios of approximately 10, reflecting their 10x higher sequencing depth in the post-selection library. All other variants should have ratios close to 1.
+The enrichment report (`results/report/enrichment_report.tsv`) should show variants 2, 5, and 8 with enrichment ratios of approximately 5, reflecting their 5x higher sequencing depth in the post-selection library (500x vs 100x). All other variants should have ratios close to 1.
 
 ## Dependencies
 
