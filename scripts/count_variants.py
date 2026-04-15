@@ -68,7 +68,10 @@ def calculate_enrichment(
         post_count = post_counts.get(ref, 0)
         pre_freq = pre_freqs.get(ref, 0)
         post_freq = post_freqs.get(ref, 0)
-        enrichment = post_freq / pre_freq if pre_freq > 0 else float("inf")
+        if pre_freq > 0:
+            enrichment = post_freq / pre_freq
+        else:
+            enrichment = 9999.0   # sentinel: variant absent pre-selection
         rows.append({
             "variant": ref,
             "pre_count": pre_count,
