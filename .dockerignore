@@ -1,0 +1,7 @@
+logs/
+results/
+data/simulated/
+.git/
+.snakemake/
+__pycache__/
+reference/nylB_variants.fasta
