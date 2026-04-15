@@ -1,0 +1,156 @@
+/* NylB Enrichment Dashboard — custom styles */
+
+:root {
+  --bg:      #0d1117;
+  --surface: #161b22;
+  --border:  #21262d;
+  --blue:    #58a6ff;
+  --green:   #3fb950;
+  --yellow:  #e3b341;
+  --red:     #f85149;
+  --purple:  #bc8cff;
+  --text:    #e6edf3;
+  --muted:   #8b949e;
+  --mono:    'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  --sans:    'IBM Plex Sans', 'Inter', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  font-family: var(--sans);
+  color: var(--text);
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.dash-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 1.5rem;
+}
+.brand-primary {
+  color: var(--blue);
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 1.45rem;
+}
+.brand-sub {
+  color: var(--text);
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: 1.45rem;
+}
+.brand-tagline {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.07em;
+  margin-top: 2px;
+}
+
+/* ── Tabs ───────────────────────────────────────────────── */
+.nav-tabs {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.nav-tabs .nav-link {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  padding: 0.5rem 1rem;
+}
+.nav-tabs .nav-link:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+.nav-tabs .nav-link.active {
+  color: var(--blue);
+  background: var(--bg);
+  border-color: var(--border) var(--border) var(--bg);
+}
+
+/* ── Cards ──────────────────────────────────────────────── */
+.sci-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.1rem;
+}
+
+/* ── Stat blocks ────────────────────────────────────────── */
+.stat-block {
+  text-align: center;
+  padding: 0.9rem 0.5rem;
+}
+.stat-val {
+  font-family: var(--mono);
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.stat-lbl {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+/* ── Section headers ────────────────────────────────────── */
+.sec-hdr {
+  font-family: var(--mono);
+  font-size: 0.67rem;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.65rem;
+}
+
+/* ── Log window ─────────────────────────────────────────── */
+.log-win {
+  background: #010409;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: #79c0ff;
+  padding: 0.9rem 1rem;
+  height: 310px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ── Rule status badges ─────────────────────────────────── */
+.rbadge {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  margin: 2px 3px;
+}
+.rb-pending  { background: #1c2128; color: var(--muted);  border: 1px solid #30363d; }
+.rb-running  { background: #0d2137; color: var(--blue);   border: 1px solid var(--blue); }
+.rb-complete { background: #0d2b1f; color: var(--green);  border: 1px solid var(--green); }
+.rb-failed   { background: #2d1117; color: var(--red);    border: 1px solid var(--red); }
+
+/* ── Warning box ─────────────────────────────────────────── */
+.warn-box {
+  background: #2d1f0a;
+  border: 1px solid var(--yellow);
+  border-radius: 6px;
+  padding: 0.55rem 0.9rem;
+  color: var(--yellow);
+  font-size: 0.82rem;
+  margin-top: 0.75rem;
+}
+
+/* ── Tab content spacing ────────────────────────────────── */
+.tab-pane-inner {
+  padding: 1.4rem 0;
+}

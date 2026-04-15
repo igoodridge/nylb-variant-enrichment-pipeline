@@ -15,5 +15,8 @@ dependencies:
   - porechop
   - minimap2
   - pytest
+  - dash>=2.17
+  - dash-bootstrap-components>=1.6
+  - plotly>=5.22
   - pip:
     - git+https://github.com/rrwick/Badread.git
